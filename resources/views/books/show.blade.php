@@ -8,14 +8,24 @@
     <div class="book-author mb-4 text-lg font-semibold">by {{ $book->author }}</div>
     <div class="book-rating flex items-center">
       <div class="mr-2 text-sm font-medium text-slate-700">
-        {{ number_format($book->reviews_avg_rating, 1) }}
+        <x-star-rating :rating="$book->reviews_avg_rating" />
       </div>
       <span class="book-review-count text-sm text-gray-500">
-        {{ $book->reviews_count }} {{ Str::plural('review', 5) }}
+        {{ $book->reviews_count }} {{ Str::plural('review', $book->reviews_count) }}
       </span>
     </div>
   </div>
 </div>
+
+<div class="mb-4">
+  <a href="{{ route('books.reviews.create', $book) }}" class="btn btn-primary">Add a Review</a>
+</div>
+
+@if(session('success'))
+<div class="mb-4 rounded-md bg-green-100 p-4 text-green-700">
+  {{ session('success') }}
+</div>
+@endif
 
 <div>
   <h2 class="mb-4 text-xl font-semibold">Reviews</h2>
@@ -24,7 +34,7 @@
     <li class="book-item mb-4">
       <div>
         <div class="mb-2 flex items-center justify-between">
-          <div class="font-semibold">{{ $review->rating }}</div>
+          <div class="font-semibold"> <x-star-rating :rating="$review->rating" /></div>
           <div class="book-review-count">
             {{ $review->created_at->format('M j, Y') }}
           </div>
