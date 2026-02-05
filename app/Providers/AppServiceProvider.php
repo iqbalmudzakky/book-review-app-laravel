@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
   public function boot(): void
   {
     $this->configureRateLimiting();
+
+    // Use Tailwind pagination views
+    Paginator::defaultView('vendor.pagination.tailwind');
   }
 
   /**
@@ -31,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
   protected function configureRateLimiting(): void
   {
     RateLimiter::for('reviews', function (Request $request) {
-      return Limit::perHour(3)->by($request->user()?->id ?: $request->ip());
+      return Limit::perHour(10)->by($request->user()?->id ?: $request->ip());
     });
   }
 }

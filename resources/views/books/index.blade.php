@@ -2,24 +2,34 @@
 
 @section('content')
 <div class="container">
-  <h1 class="mb-10 text-2xl font-semibold">Books</h1>
+  <!-- Header Section -->
+  <div class="mb-8 text-center">
+    <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+      Book Reviews
+    </h1>
+    <p class="text-slate-400 text-lg">Discover and review your favorite books</p>
+  </div>
 
-  <form action="{{ route('books.index') }}" method="GET" class="mb-4 flex items-center space-x-2">
-    <input
-      type="text"
-      name="title"
-      placeholder="Search by title"
-      value="{{ request('title') }}"
-      class="input h-10" />
+  <!-- Search Bar -->
+  <form action="{{ route('books.index') }}" method="GET" class="mb-6 flex items-center gap-3">
+    <div class="flex-1 relative">
+      <input
+        type="text"
+        name="title"
+        placeholder="🔍 Search books by title..."
+        value="{{ request('title') }}"
+        class="input h-12 w-full pl-4" />
+    </div>
     <input type="hidden" name="filter" value="{{ request('filter') }}" />
-    <button type="submit" class="btn h-10">Search</button>
-    <a href="{{ route('books.index') }}" class="btn h-10">Clear</a>
+    <button type="submit" class="btn h-12 px-8">Search</button>
+    <a href="{{ route('books.index') }}" class="btn-secondary h-12 px-8">Clear</a>
   </form>
 
-  <div class="filter-container mb-4 flex">
+  <!-- Filter Tabs -->
+  <div class="filter-container mb-8">
     @php
     $filters = [
-    ''=>'latest',
+    ''=>'Latest',
     'popular_last_month'=>'Popular Last Month',
     'popular_last_6month'=>'Popular Last 6 Months',
     'highest_rated_last_month'=>'Highest Rated Last Month',
@@ -34,37 +44,44 @@
     @endforeach
   </div>
 
-  <ul>
+  <!-- Books Grid -->
+  <ul class="space-y-5">
     @forelse ($books as $book)
-    <li class="mb-4">
-      <div class="book-item">
-        <div
-          class="flex flex-wrap items-center justify-between">
-          <div class="w-full grow sm:w-auto">
-            <a href="{{ route('books.show', $book) }}" class="book-title">{{ $book->title }}</a>
+    <li>
+      <div class="book-item group">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex-1 min-w-0">
+            <a href="{{ route('books.show', $book) }}" class="book-title block mb-2">
+              {{ $book->title }}
+            </a>
             <span class="book-author">by {{ $book->author }}</span>
           </div>
-          <div>
-            <div class="book-rating">
+          <div class="text-right">
+            <div class="book-rating flex items-center justify-end gap-1 text-lg">
               <x-star-rating :rating="$book->reviews_avg_rating" />
+              <span class="text-slate-300 ml-2 font-semibold">
+                {{ $book->reviews_avg_rating ? number_format($book->reviews_avg_rating, 1) : 'N/A' }}
+              </span>
             </div>
             <div class="book-review-count">
-              out of {{ $book->reviews_count }} {{Str::plural('review', $book->reviews_count)}}
+              {{ $book->reviews_count }} {{Str::plural('review', $book->reviews_count)}}
             </div>
           </div>
         </div>
       </div>
     </li>
     @empty
-    <li class="mb-4">
+    <li>
       <div class="empty-book-item">
-        <p class="empty-text">No books found</p>
+        <div class="text-6xl mb-4">📚</div>
+        <p class="empty-text mb-3">No books found</p>
         <a href="{{ route('books.index') }}" class="reset-link">Reset criteria</a>
       </div>
     </li>
     @endforelse
   </ul>
 
+  <!-- Pagination -->
   @if ($books->count())
   <div class="pagination-container">
     {{ $books->links() }}
